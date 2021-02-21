@@ -1,13 +1,25 @@
 const Discord = require('discord.js');
+const { Pool } = require('pg');
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 
 const client = new Discord.Client();
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+let client;
+
 const adapter = new FileSync('db.json')
 const db = low(adapter)
 
-client.on('ready', () => {
+client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  client = await pool.connect();
+  const result = await client.query('CREATE TABLE IF NOT EXISTS counter (id integer, count integer);');
+  console.log(result)
 });
 
 client.on('message', msg => {
