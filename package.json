@@ -1,19 +1,6 @@
 {
-  "name": "Discord user activity bot",
-  "version": "1.0.0",
-  "description": "Post count database",
-  "main": "index.js",
-  "engines": {
-    "node": "8.x",
-    "npm": "*"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
-  },
-  "author": "Ryan Shtirmer",
-  "dependencies": {
-    "discord.js": "^11.3.0",
-    "lowdb"
-  }
+	"dependencies": {
+		"discord.js": "^11.3.0",
+		"lowdb": "^1.0.0"
+	}
 }
