@@ -24,7 +24,6 @@ client.on('message', async msg => {
   if (msg.content === '!postcount') {
     let result = await pg_client.query('SELECT count FROM counter WHERE id = $1;', [authorID])
     let reply = result['rows'][0].count
-    console.log(reply)
     msg.reply(reply);
   }
 });
