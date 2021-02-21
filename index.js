@@ -12,7 +12,9 @@ let pg_client;
 
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
-  console.log(client.guilds)
+  client.guilds.cache.forEach((guild) => {
+      console.log(guild.name);
+  });
   pg_client = await pool.connect();
   const result = await pg_client.query('CREATE TABLE IF NOT EXISTS counter (id text UNIQUE, count integer);')
 });
