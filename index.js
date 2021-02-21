@@ -13,7 +13,7 @@ let pg_client;
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
   pg_client = await pool.connect();
-  const result = await pg_client.query('CREATE TABLE IF NOT EXISTS counter (id text UNIQUE, count integer);');
+  const result = await pg_client.query('CREATE TABLE IF NOT EXISTS counter (id text UNIQUE, count integer);')
 });
 
 client.on('message', async msg => {
@@ -22,8 +22,9 @@ client.on('message', async msg => {
   await pg_client.query('UPDATE counter SET count = count + 1 WHERE id = $1;', [authorID])
 
   if (msg.content === '!postcount') {
-    let reply = await pg_client.query('SELECT count FROM counter WHERE id = $1;', [authorID])
-    console.log(reply)
+    let result = await pg_client.query('SELECT count FROM counter WHERE id = $1;', [authorID])
+    let reply = result['rows'][0].count
+    console.log(reply[])
     msg.reply(reply);
   }
 });
