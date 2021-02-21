@@ -22,7 +22,7 @@ client.on('message', async msg => {
   await pg_client.query('UPDATE counter SET count = count + 1 WHERE id = $1;', [authorID])
 
   if (msg.content === '!postcount') {
-    let reply = await pg_client.query('SELECT count FROM test WHERE id = $1;', [authorID])
+    let reply = await pg_client.query('SELECT count FROM counter WHERE id = $1;', [authorID])
     console.log(reply)
     msg.reply(reply);
   }
