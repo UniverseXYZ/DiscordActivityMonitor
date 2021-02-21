@@ -72,11 +72,13 @@ client.on('ready', async () => {
 client.on('message', async msg => {
   let authorID = msg.author.id.toString()
   update(authorID)
+  /*
   if (msg.content === '!postcount') {
     let result = await pg_client.query('SELECT count FROM counter WHERE id = $1;', [authorID])
     let reply = result['rows'][0].count
     msg.reply(reply)
   }
+  */
 })
 
 client.login(process.env.TOKEN)
