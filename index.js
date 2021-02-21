@@ -63,7 +63,9 @@ async function run_backfill(){
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`)
   pg_client = connect_table()
-  run_backfill()
+  if(process.env.backfill == 1){
+    run_backfill()
+  }
 })
 
 client.on('message', async msg => {
