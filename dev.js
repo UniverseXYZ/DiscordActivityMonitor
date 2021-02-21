@@ -19,6 +19,7 @@ async function fetch_messages_from(channel, last_msg_id){
 
 
 async function handle_messages(messages, channel){
+  console.log(channel.name)
   const last_message_id = messages.array().slice(-1)[0].id
   console.log(`Received ${messages.size} messages from ${channel.name}: ${last_message_id}`)
   messages.forEach((message) => {
