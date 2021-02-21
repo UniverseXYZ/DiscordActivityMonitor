@@ -10,15 +10,15 @@ const pool = new Pool({
     rejectUnauthorized: false
   }
 });
-let client;
+let pg_client;
 
 const adapter = new FileSync('db.json')
 const db = low(adapter)
 
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`);
-  client = await pool.connect();
-  const result = await client.query('CREATE TABLE IF NOT EXISTS counter (id integer, count integer);');
+  pg_client = await pool.connect();
+  const result = await pg_client.query('CREATE TABLE IF NOT EXISTS counter (id integer, count integer);');
   console.log(result)
 });
 
