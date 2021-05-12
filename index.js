@@ -50,35 +50,26 @@ async function handle_messages(messages, channel){
   }
 }
 
-async function run_backfill(){
-  for (const guild of client.guilds.cache.array()) {
-    for (const channel of guild.channels.cache.array()){
-      if(channel.type == "text"){
-        await fetch_messages(channel)
-      }
-    }
-  }
-}
 
 client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`)
   pg_client = connect_table()
-  console.log(process.env.BACKFILL)
-  if(process.env.BACKFILL == "1"){
-    run_backfill()
-  }
 })
-
 client.on('message', async msg => {
   let authorID = msg.author.id.toString()
-  update(authorID)
-  /*
-  if (msg.content === '!postcount') {
+ 
+  if (msg.content.includes('!airdrop')) {
     let result = await pg_client.query('SELECT count FROM counter WHERE id = $1;', [authorID])
-    let reply = result['rows'][0].count
-    msg.reply(reply)
+    let postCount = result['rows'][0].count
+    if(parseInt(postCount) >= 10){
+      var message_array = msg.content.split(" ");
+      var address = message_array[-1]
+      //store addresses here
+      msg.reply("Successfully added address")
+    } else {
+     msg.reply("Sorry, you are not eligible") 
+    }
   }
-  */
 })
 
 client.login(process.env.TOKEN)
