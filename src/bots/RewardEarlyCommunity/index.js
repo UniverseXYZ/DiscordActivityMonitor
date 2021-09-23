@@ -46,7 +46,7 @@ class RewardEarlyComunnityBot {
 
 			const MEMBERS_MANAGER = guild.members;
 
-			const scrapeMessagesPromise = textChannelIds.map(async id => this._scrapeChannelMessagesRecursivly(id, null, CHANNEL_MANAGER, LOCAL_DB));
+			const scrapeMessagesPromise = textChannelIds.map(async id => this._scrapeChannelMessages(id, CHANNEL_MANAGER, LOCAL_DB));
 			await Promise.all(scrapeMessagesPromise);
 
 			await this._markUserMembers(LOCAL_DB, MEMBERS_MANAGER);
@@ -63,29 +63,32 @@ class RewardEarlyComunnityBot {
 	 * @param {Object} localDb
 	 * @returns
 	 */
-	async _scrapeChannelMessagesRecursivly(_channelId = null, lastMessageId = null, channelManager, localDb) {
+	 async _scrapeChannelMessages(_channelId = null, channelManager, localDb) {
 		if (!_channelId) return console.warn('Scrape messages error: Missing channel id !');
 
 		const channel = await channelManager.fetch(_channelId);
-		const messages = await channel.messages.fetch({limit: 1, before: lastMessageId});
+		const MAX_MESSAGES = 100; // Discord API limitation
+		let lastMessageId = null; // IF no id is provided the fetch will return the messages from the beginning
 
-		// Exit the recursion
-		if (messages.size < 1) return;
+		while(true) {
+			const messages = await channel.messages.fetch({limit: MAX_MESSAGES, before: lastMessageId});
 
-		lastMessageId = messages.last().id;
+			lastMessageId = messages.last().id;
 
-		// Don't get the bot messages, deleted and other than SUPPORTED_TYPES
-		const filtered = messages.filter(m => !m.bot && !m.deleted && SUPPORTED_MESSAGE_TYPES.includes(m.type));
+			// Don't get the bot messages, deleted and other than SUPPORTED_TYPES
+			const filtered = messages.filter(m => !m.bot && !m.deleted && SUPPORTED_MESSAGE_TYPES.includes(m.type));
 
-		// Save the msgs count to users into the local object
-		filtered.forEach(m => {
-			// Create or get the entry
-			localDb[m.author.username] = localDb[m.author.username] || { postsCount: 0 , isMember: false};
-			// Increase user's posts count
-			localDb[m.author.username].postsCount++;
-		});
+			// Save the msgs count to users into the local object
+			filtered.forEach(m => {
+				// Create or get the entry
+				localDb[m.author.username] = localDb[m.author.username] || { postsCount: 0 , isMember: false};
+				// Increase user's posts count
+				localDb[m.author.username].postsCount++;
+			});
 
-		return this._scrapeChannelMessagesRecursivly(_channelId, lastMessageId, channelManager, localDb);
+			const exit = messages.size < MAX_MESSAGES // We took and proceeded the last portion of the messages
+			if(exit) break;
+		}
 	}
 
 	/**
@@ -102,7 +105,6 @@ class RewardEarlyComunnityBot {
 
 		await Promise.all(markUsersPromies);
 	}
-
 
 /**
  *
