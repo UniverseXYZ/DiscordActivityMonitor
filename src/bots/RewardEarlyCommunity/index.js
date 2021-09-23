@@ -14,10 +14,11 @@
 
 
 // Require the necessary discord.js classes
-const { Client, Intents } = require('discord.js');
+import { Client, Intents } from 'discord.js';
 // Load the process envs
-require('dotenv').config();
-const fs = require('fs');
+import dotenv from 'dotenv';
+dotenv.config();
+import fs from 'fs';
 const TOKEN = process.env.REC_BOT_TOKEN;
 const SERVER_NAME = process.env.REC_SERVER_NAME;
 const SUPPORTED_MESSAGE_TYPES = process.env.SUPPORTED_MESSAGE_TYPES;
@@ -28,30 +29,32 @@ class RewardEarlyComunnityBot {
 		this._client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 		// Login to Discord with your client's token
 		this._client.login(TOKEN);
-		this._attachListeners();
 	}
 
-	_attachListeners() {
-		this._client.once('ready', async () => {
-			console.log('Client is Ready !');
+	async scrapeUSers() {
+		return new Promise(res => {
+			this._client.once('ready', async () => {
+				console.log('Client is Ready !');
 
-			const LOCAL_DB = {};
-			const CHANNEL_MANAGER = this._client.channels;
-			const GUILD_MANAGER = this._client.guilds;
+				const LOCAL_DB = {};
+				const CHANNEL_MANAGER = this._client.channels;
+				const GUILD_MANAGER = this._client.guilds;
 
-			const textChannelIds = CHANNEL_MANAGER.cache.filter(c => c.id && c.type === 'text').map(c => c.id);
-			const guild = GUILD_MANAGER.cache.find(g => g.name === SERVER_NAME);
+				const textChannelIds = CHANNEL_MANAGER.cache.filter(c => c.id && c.type === 'text').map(c => c.id);
+				const guild = GUILD_MANAGER.cache.find(g => g.name === SERVER_NAME);
 
-			if (!guild) return console.error('There is no such guild (server name), for this Client, check .env configuration !');
+				if (!guild) return console.error('There is no such guild (server name), for this Client, check .env configuration !');
 
-			const MEMBERS_MANAGER = guild.members;
+				const MEMBERS_MANAGER = guild.members;
 
-			const scrapeMessagesPromise = textChannelIds.map(async id => this._scrapeChannelMessages(id, CHANNEL_MANAGER, LOCAL_DB));
-			await Promise.all(scrapeMessagesPromise);
+				const scrapeMessagesPromise = textChannelIds.map(async id => this._scrapeChannelMessages(id, CHANNEL_MANAGER, LOCAL_DB));
+				await Promise.all(scrapeMessagesPromise);
 
-			await this._markUserMembers(LOCAL_DB, MEMBERS_MANAGER);
+				await this._markUserMembers(LOCAL_DB, MEMBERS_MANAGER);
 
-			this._saveFile(LOCAL_DB);
+				this._saveFile(LOCAL_DB);
+				res();
+			});
 		});
 	}
 
@@ -63,7 +66,7 @@ class RewardEarlyComunnityBot {
 	 * @param {Object} localDb
 	 * @returns
 	 */
-	 async _scrapeChannelMessages(_channelId = null, channelManager, localDb) {
+	async _scrapeChannelMessages(_channelId = null, channelManager, localDb) {
 		if (!_channelId) return console.warn('Scrape messages error: Missing channel id !');
 
 		const channel = await channelManager.fetch(_channelId);
@@ -118,7 +121,7 @@ class RewardEarlyComunnityBot {
 			const isLast = index === Object.keys(localDb).length - 1;
 			const user = localDb[username];
 			file.write(
-			`	{"userName": "${username}", "postsCount": "${user.postsCount}"}${isLast ? '' : ','}` + "\n"
+			`	{ "userName": "${username}", "isMember": "${user.isMember}", "postsCount": "${user.postsCount}"}${isLast ? '' : ','}` + "\n"
 			);
 		});
 
@@ -127,6 +130,13 @@ class RewardEarlyComunnityBot {
 
 		console.log("File Saved");
 	}
+
+	getUsers(postsCount) {
+		const rawdata = fs.readFileSync('./database/test.json');
+		const users = JSON.parse(rawdata);
+		const filtered = users.filter(u => u.postsCount >= postsCount && u.isMember);
+		console.log(filtered);
+	}
 }
 
-new RewardEarlyComunnityBot();
+export default RewardEarlyComunnityBot;
