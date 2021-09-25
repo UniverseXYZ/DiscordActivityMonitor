@@ -1,18 +1,3 @@
-// Requirements
-// Bot #1 - one time thing. To reward early community
-
-// Scrape all user names that have:
-
-// 1) posted at least once
-// 2) are still members of the server by the current date (whenever we buld the bot, e.g. 22.09)
-
-// +
-
-// Scrape all user names that have:
-// 1) posted at least 5 times
-// 2) are still members of the server
-
-
 // Require the necessary discord.js classes
 import { Client, Intents } from 'discord.js';
 // Load the process envs
@@ -21,6 +6,7 @@ dotenv.config();
 import fs from 'fs';
 const TOKEN = process.env.REC_BOT_TOKEN;
 const SERVER_NAME = process.env.REC_SERVER_NAME;
+const OUTPUT_DIR = process.env.REC_OUTPUT_DIR;
 const SUPPORTED_MESSAGE_TYPES = process.env.SUPPORTED_MESSAGE_TYPES;
 
 class RewardEarlyComunnityBot {
@@ -52,7 +38,7 @@ class RewardEarlyComunnityBot {
 
 				await this._markUserMembers(LOCAL_DB, MEMBERS_MANAGER);
 
-				this._saveFile(LOCAL_DB);
+				await this._saveFile(LOCAL_DB);
 				res();
 			});
 		});
@@ -84,9 +70,9 @@ class RewardEarlyComunnityBot {
 			// Save the msgs count to users into the local object
 			filtered.forEach(m => {
 				// Create or get the entry
-				localDb[m.author.username] = localDb[m.author.username] || { postsCount: 0 , isMember: false};
+				localDb[m.author.id] = localDb[m.author.id] || { postsCount: 0 ,isMember: false, username: m.author.username, id: m.author.id};
 				// Increase user's posts count
-				localDb[m.author.username].postsCount++;
+				localDb[m.author.id].postsCount++;
 			});
 
 			const exit = messages.size < MAX_MESSAGES // We took and proceeded the last portion of the messages
@@ -114,25 +100,27 @@ class RewardEarlyComunnityBot {
  * @param {Object} localDb
  */
 	_saveFile(localDb) {
-		const file = fs.createWriteStream("./database/test.json");
-		file.write("[" + "\n");
+		return new Promise(res => {
+			const file = fs.createWriteStream(OUTPUT_DIR);
+			file.write("[" + "\n");
 
-		Object.keys(localDb).forEach((username, index) => {
-			const isLast = index === Object.keys(localDb).length - 1;
-			const user = localDb[username];
-			file.write(
-			`	{ "userName": "${username}", "isMember": "${user.isMember}", "postsCount": "${user.postsCount}"}${isLast ? '' : ','}` + "\n"
-			);
-		});
+			Object.keys(localDb).forEach((username, index) => {
+				const isLast = index === Object.keys(localDb).length - 1;
+				const user = localDb[username];
+				file.write(
+				`	{ "userName": "${user.username}", "id": "${user.id}", "isMember": "${user.isMember}", "postsCount": "${user.postsCount}"}${isLast ? '' : ','}` + "\n"
+				);
+			});
 
-		file.write("]");
-		file.end();
+			file.write("]");
+			file.end(res);
 
-		console.log("File Saved");
+			console.log("File Saved");
+		})
 	}
 
 	getUsers(postsCount) {
-		const rawdata = fs.readFileSync('./database/test.json');
+		const rawdata = fs.readFileSync(OUTPUT_DIR);
 		const users = JSON.parse(rawdata);
 		const filtered = users.filter(u => u.postsCount >= postsCount && u.isMember);
 		console.log(filtered);
