@@ -20,13 +20,13 @@ class RewardEarlyComunnityBot {
 	async scrapeUSers() {
 		return new Promise(res => {
 			this._client.once('ready', async () => {
-				console.log('Client is Ready !');
+				console.log('RewardEarlyComunnityBot Client is Ready !');
 
 				const LOCAL_DB = {};
 				const CHANNEL_MANAGER = this._client.channels;
 				const GUILD_MANAGER = this._client.guilds;
 
-				const textChannelIds = CHANNEL_MANAGER.cache.filter(c => c.id && c.type === 'text').map(c => c.id);
+				const textChannelIds = CHANNEL_MANAGER.cache.filter(c => c.id && c.type === 'GUILD_TEXT').map(c => c.id);
 				const guild = GUILD_MANAGER.cache.find(g => g.name === SERVER_NAME);
 
 				if (!guild) return console.error('There is no such guild (server name), for this Client, check .env configuration !');
@@ -88,8 +88,8 @@ class RewardEarlyComunnityBot {
 	async _markUserMembers(localDb, membersManager) {
 		const markUsersPromies = Object.keys(localDb).map(async userName => {
 			const user = localDb[userName];
-			const member = await membersManager.fetch({query: userName, limit: 1});
-			user.isMember = member.size ? true : false;
+			const member = await membersManager.fetch(user.id);
+			user.isMember = member ? true : false;
 		});
 
 		await Promise.all(markUsersPromies);
@@ -115,7 +115,7 @@ class RewardEarlyComunnityBot {
 			file.write("]");
 			file.end(res);
 
-			console.log("File Saved");
+			console.log("RewardEarlyComunnityBot File Saved !");
 		})
 	}
 
@@ -123,7 +123,6 @@ class RewardEarlyComunnityBot {
 		const rawdata = fs.readFileSync(OUTPUT_DIR);
 		const users = JSON.parse(rawdata);
 		const filtered = users.filter(u => u.postsCount >= postsCount && u.isMember);
-		console.log(filtered);
 	}
 }
 
