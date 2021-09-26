@@ -1,9 +1,3 @@
-// **Bot #2**
-
-// Scrape all user names and rank by number of times they have posted messages including the letters "gm"
-
-// Top 5 GM sayers will get rewarded
-
 // Require the necessary discord.js classes
 import { Client, Intents } from 'discord.js';
 // Load the process envs
