@@ -11,4 +11,5 @@ await RewardByRankBot.scrapeUSers('gm');
 RewardByRankBot.getUsers(2);
 
 const EligibilityBot = new Eligibility();
+await EligibilityBot.loadFiles();
 EligibilityBot.listenForCommands();

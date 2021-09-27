@@ -127,7 +127,7 @@ class RewardByRankBot {
 			const isLast = index === Object.keys(localDb).length - 1;
 			const user = localDb[username];
 			file.write(
-			`	{ "userName": "${user.username}", "id": "${user.id}", "isMember": "${user.isMember}", "postsCount": "${user.postsCount}"}${isLast ? '' : ','}` + "\n"
+			`	{ "username": "${user.username}", "id": "${user.id}", "isMember": "${user.isMember}", "postsCount": "${user.postsCount}"}${isLast ? '' : ','}` + "\n"
 			);
 		});
 
