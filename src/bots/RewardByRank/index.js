@@ -78,9 +78,9 @@ class RewardByRankBot {
 
 			lastMessageId = messages.last().id;
 
-			// Don't get the bot messages, deleted and other than SUPPORTED_TYPES
+			// Don't get the bot messages, deleted and other than SUPPORTED_TYPES and not slash commands
 			const filtered = messages.filter(m => {
-				const elligible = !m.bot && !m.deleted && SUPPORTED_MESSAGE_TYPES.includes(m.type);
+				const elligible = !m.bot && !m.author.bot && !m.content.startsWith('/') && !m.deleted && SUPPORTED_MESSAGE_TYPES.includes(m.type);
 				const messageMatch = m.content.toLowerCase() === messageFilter;
 				if (elligible && messageMatch) return true;
 				else return false;

@@ -64,8 +64,8 @@ class RewardEarlyComunnityBot {
 
 			lastMessageId = messages.last().id;
 
-			// Don't get the bot messages, deleted and other than SUPPORTED_TYPES
-			const filtered = messages.filter(m => !m.bot && !m.deleted && SUPPORTED_MESSAGE_TYPES.includes(m.type));
+			// Don't get the bot messages, deleted and other than SUPPORTED_TYPES and not slash commands
+			const filtered = messages.filter(m => !m.bot && !m.author.bot && !m.deleted && !m.content.startsWith('/') && SUPPORTED_MESSAGE_TYPES.includes(m.type));
 
 			// Save the msgs count to users into the local object
 			filtered.forEach(m => {
