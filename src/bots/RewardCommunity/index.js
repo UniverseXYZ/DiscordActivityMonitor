@@ -38,7 +38,8 @@ class RewardEarlyComunnityBot {
 
 				await this._markUserMembers(LOCAL_DB, MEMBERS_MANAGER);
 
-				await this._saveFile(LOCAL_DB);
+				const onlyMembers = Object.keys(LOCAL_DB).map(userId => LOCAL_DB[userId]).filter(user => user.isMember);
+				await this._saveFile(onlyMembers);
 				res();
 			});
 		});
@@ -88,8 +89,12 @@ class RewardEarlyComunnityBot {
 	async _markUserMembers(localDb, membersManager) {
 		const markUsersPromies = Object.keys(localDb).map(async userName => {
 			const user = localDb[userName];
-			const member = await membersManager.fetch(user.id);
-			user.isMember = member ? true : false;
+			try {
+				const member = await membersManager.fetch(user.id);
+				user.isMember = member ? true : false;
+			} catch(e) {
+				user.isMember = false;
+			}
 		});
 
 		await Promise.all(markUsersPromies);
@@ -97,16 +102,15 @@ class RewardEarlyComunnityBot {
 
 /**
  *
- * @param {Object} localDb
+ * @param {array} data
  */
-	_saveFile(localDb) {
+	_saveFile(data) {
 		return new Promise(res => {
 			const file = fs.createWriteStream(OUTPUT_DIR);
 			file.write("[" + "\n");
 
-			Object.keys(localDb).forEach((username, index) => {
-				const isLast = index === Object.keys(localDb).length - 1;
-				const user = localDb[username];
+			data.forEach((user, index) => {
+				const isLast = index === data.length - 1;
 				file.write(
 				`	{ "username": "${user.username}", "id": "${user.id}", "isMember": "${user.isMember}", "postsCount": "${user.postsCount}"}${isLast ? '' : ','}` + "\n"
 				);
