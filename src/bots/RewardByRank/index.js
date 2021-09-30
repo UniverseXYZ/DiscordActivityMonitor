@@ -26,7 +26,7 @@ class RewardByRankBot {
 				const CHANNEL_MANAGER = this._client.channels;
 				const GUILD_MANAGER = this._client.guilds;
 
-				const textChannelIds = CHANNEL_MANAGER.cache.filter(c => c.id && c.type === 'GUILD_TEXT').map(c => c.id);
+				const textChannelIds = CHANNEL_MANAGER.cache.filter(c => c.id && c.viewable && c.type === 'GUILD_TEXT').map(c => c.id);
 				const guild = GUILD_MANAGER.cache.find(g => g.name === SERVER_NAME);
 
 				if (!guild) return console.error('There is no such guild (server name), for this Client, check .env configuration !');
