@@ -52,7 +52,7 @@ class Eligibility {
         })
     }
 
-	listenForCommands(messageFilter) {
+	listenForCommands() {
         this._client.once('ready', () => {
             console.log('Eligibility Ready!');
         });
