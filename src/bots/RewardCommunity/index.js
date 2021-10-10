@@ -64,6 +64,7 @@ class RewardEarlyComunnityBot {
 
 		while(true) {
 			const messages = await channel.messages.fetch({limit: MAX_MESSAGES, before: lastMessageId});
+			if (messages.size == 0) return
 
 			lastMessageId = messages.last().id;
 
