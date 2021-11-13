@@ -12,21 +12,6 @@ const REWARD_EARLY_COMUNNITY_OUTPUT_DIR = process.env.REC_OUTPUT_DIR;
 const ELIGIBLE_OUTPUT_DIR = process.env.ELGB_OUTPUT_DIR;
 const RBR_OUTPUT_DIR = process.env.RBR_OUTPUT_DIR;
 const RBR_TOP_WINNERS_COUNT = process.env.RBR_TOP_WINNERS;
-const ELGB_ENTRY_DIR = process.env.ELGB_ENTRY_DIR;
-const ELGB_MID_DIR = process.env.ELGB_MID_DIR;
-const ELGB_PRO_DIR = process.env.ELGB_PRO_DIR;
-
-const POSTS_THRESHOLD = {
-    entryLevel: 1,
-    midLevel: 5,
-    proLevel: 20,
-};
-
-const DIR_BY_LEVEL = {
-    1: ELGB_ENTRY_DIR,
-    5: ELGB_MID_DIR,
-    20: ELGB_PRO_DIR,
-}
 
 import EthereumAddress from 'ethereum-address';
 class Eligibility {
@@ -77,22 +62,6 @@ class Eligibility {
                 if (!user) {
                     return await interaction.reply({ content: 'Sorry you are not eligible !', ephemeral: true });
                 }
-
-                // TODO:: Those are the Criterias:
-                // Level 1 => Posted at least once && still members of the server
-                // Level 2 => Posted at least 5 times && still members of the server
-                // Level 3 => Posted at least 20+ times && still members of the server
-                // Lever 4 => User is in top 5 'gm' sayers
-
-                const userPostsCount = this._earlyCommunityUsers.find(u => u.id === userId);
-                const userLevel = Object.keys(POSTS_THRESHOLD).reduce((result, current) => {
-                    const levelThreshold = POSTS_THRESHOLD[current];
-                    if (userPostsCount >= levelThreshold) result = levelThreshold
-                    return result
-                }, {});
-
-                const outputDir = DIR_BY_LEVEL[userLevel];
-                // TODO:: we are waiting for the combinations
 
                 // Read the Eligible file
                 const alreadyEligible = await this._alreadyEligible(userId);
