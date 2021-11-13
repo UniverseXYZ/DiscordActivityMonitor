@@ -9,8 +9,8 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import dotenv from 'dotenv';
 dotenv.config();
 const TOKEN = process.env.RBR_BOT_TOKEN;
-const CLIENT_ID = rocess.env.SC_CLIENT_ID;
-const GUILD_ID = rocess.env.SC_GUILD_ID;
+const CLIENT_ID = process.env.SC_CLIENT_ID;
+const GUILD_ID = process.env.SC_GUILD_ID;
 
 const commands = [
 	new SlashCommandBuilder()
