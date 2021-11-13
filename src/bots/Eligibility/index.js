@@ -61,7 +61,7 @@ class Eligibility {
                 }
 
                 const userId = interaction.user.id;
-                const user = this._topByRank.find(u => u.id === userId && parseInt(u.postsCount) >= POSTS_TRESHOLD);
+                const user = this._earlyCommunityUsers.find(u => u.id === userId && parseInt(u.postsCount) >= POSTS_TRESHOLD);
                 // The user is not eligible
                 if (!user) {
                     return await interaction.reply({ content: 'Sorry you are not eligible !', ephemeral: true });
