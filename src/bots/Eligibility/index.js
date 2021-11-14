@@ -18,7 +18,7 @@ import EthereumAddress from 'ethereum-address';
 class Eligibility {
 	constructor() {
 		// Create a new client instance
-		this._client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+		this._client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 		// Login to Discord with your client's token
 		this._client.login(TOKEN);
         this._earlyCommunityUsers = null;
@@ -41,6 +41,13 @@ class Eligibility {
 	listenForCommands() {
         this._client.once('ready', () => {
             console.log('Eligibility Ready!');
+        });
+
+        this._client.on('messageCreate', async (message) => {
+            // In order for the bot to be able to delete messages, it should have administrator premissions
+            if (message.channelId === ELIGIBLE_CHANNEL_ID) {
+                message.delete();
+            }
         });
 
         this._client.on('interactionCreate', async interaction => {
