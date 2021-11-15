@@ -71,7 +71,7 @@ class Eligibility {
                 const user = this._earlyCommunityUsers.find(u => u.id === userId && parseInt(u.postsCount) >= POSTS_TRESHOLD);
                 // The user is not eligible
                 if (!user) {
-                    return await interaction.reply({ content: 'Sorry you are not eligible !', ephemeral: true });
+                    return await interaction.reply({ content: 'Oops! Looks like you’re ngmi to the whitelist.', ephemeral: true });
                 }
 
                 // Read the Eligible file
