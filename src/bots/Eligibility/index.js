@@ -54,7 +54,7 @@ class Eligibility {
             if (!interaction.isCommand()) return;
 
             if (interaction.channelId !== ELIGIBLE_CHANNEL_ID) {
-                return await interaction.reply({ content: 'Please use the air-drop channel !', ephemeral: true });
+                return await interaction.reply({ content: 'Please use the #nft-whitelist channel !', ephemeral: true });
             }
 
             // You can take the user id from interaction.user.id
